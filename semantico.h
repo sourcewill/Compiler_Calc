@@ -7,6 +7,7 @@ union numero{
 /* Definicao de variavel */
 struct variavel{
 	int tipo;
+	int id;
 	char* nome;
 	union numero valor;
 	struct variavel * next;
@@ -40,4 +41,5 @@ void analise_semantica(struct arvore_sintatica *);
 /* Insere nova variavel na lista*/
 struct variavel* nova_variavel(int, char*, union numero, struct variavel*);
 
-
+/* Backend */
+void Backend(struct arvore_sintatica *);

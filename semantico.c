@@ -10,6 +10,90 @@
 struct variavel* inicio_lista_vars = NULL;
 struct variavel* fim_lista_vars = NULL;
 extern FILE* arq_saida;
+int ID_REG = 1;
+
+
+/* Insere inicio do arquivo de saida */
+void insere_inicio_saida(){
+
+	char* comentario = "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.";
+	char* print_int = "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%d\\0A\\00\", align 1";
+	char* print_float = "\n@.str.1 = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1";
+	char* inicio_main = "\n\ndefine i32 @main() #0 {";
+
+	fprintf(arq_saida, "%s", comentario);
+	fprintf(arq_saida, "%s", print_int);
+	fprintf(arq_saida, "%s", print_float);
+	fprintf(arq_saida, "%s", inicio_main);
+}
+
+
+/* Insere fim do arquivo de saida */
+void insere_fim_saida(){
+
+	char* fim_main = "\n  ret i32 0\n}";
+	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #1";
+
+	fprintf(arq_saida, "%s", fim_main);
+	fprintf(arq_saida, "%s", declare_printf);
+}
+
+
+/* Insere alocacao de variavel INT no arquivo de saida */
+void insere_alloca_INT_saida(int id){
+	char* alloca_inicio = "\n  %";
+	char* alloca_fim = " = alloca i32, align 4";
+
+	fprintf(arq_saida, "%s", alloca_inicio);
+	fprintf(arq_saida, "%d", id);
+	fprintf(arq_saida, "%s", alloca_fim);
+}
+
+/* Insere alocacao de variavel INT no arquivo de saida */
+void insere_store_INT_saida(int valor){
+	char* store_inicio = "\n  store i32 ";
+	char* store_meio = ", i32* %";
+	char* store_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "%d", valor);
+	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, "%d", ID_REG);
+	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Percorre alista de variaveis e alloca cada uma no arquivo de saida */
+void alloca_variaveis(){
+
+	struct tipo_valor tipo_valor;
+	struct variavel* var = inicio_lista_vars;
+
+	while(var){
+		switch(var->tipo){
+			case NUM_INT:
+				insere_alloca_INT_saida(var->id);
+				break;
+			case NUM_FLOAT:
+				break;
+			default:
+				printf("\nErro interno: tipo de no desconhecido");
+			exit(1);
+		}
+		var = var->next;
+	}
+}
+
+/* BACKEND */
+void backend(struct arvore_sintatica * arvore){
+
+	insere_inicio_saida();
+	alloca_variaveis();
+	
+	insere_fim_saida();
+}
+
+/*========================================================================================================*/
+/*========================================================================================================*/
 
 
 /* Aloca nova variavel na lista */
@@ -17,10 +101,12 @@ struct variavel* nova_variavel(int tipo, char* nome, union numero valor, struct 
 
 	struct variavel * nova = malloc(sizeof(struct variavel));
 	nova->tipo = tipo;
+	nova->id = ID_REG;
 	nova->nome = nome;
 	switch(tipo){
 		case NUM_INT:
 			nova->valor.inteiro = valor.inteiro;
+			//insere_alloca_INT_saida();
 			break;
 		case NUM_FLOAT:
 			nova->valor.real = valor.real;
@@ -35,6 +121,7 @@ struct variavel* nova_variavel(int tipo, char* nome, union numero valor, struct 
 	}else{
 		inicio_lista_vars = nova;	
 	}
+	ID_REG++;
 	return nova;
 }
 
@@ -276,36 +363,8 @@ void valida_atr(char* id, struct no *no){
 }
 
 
-/* Insere inicio do arquivo de saida */
-void insere_inicio_saida(){
-
-	char* comentario = "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.";
-	char* print_int = "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%d\\0A\\00\", align 1";
-	char* print_float = "\n@.str.1 = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1";
-	char* inicio_main = "\n\ndefine i32 @main() #0 {";
-
-	fprintf(arq_saida, "%s", comentario);
-	fprintf(arq_saida, "%s", print_int);
-	fprintf(arq_saida, "%s", print_float);
-	fprintf(arq_saida, "%s", inicio_main);
-}
-
-
-/* Insere fim do arquivo de saida */
-void insere_fim_saida(){
-
-	char* fim_main = "\n}";
-	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #1";
-
-	fprintf(arq_saida, "%s", fim_main);
-	fprintf(arq_saida, "%s", declare_printf);
-}
-
-
 /* Analisador semantico */
 void analise_semantica(struct arvore_sintatica * arvore){
-
-	insere_inicio_saida();
 
 	struct tipo_valor tipo_valor;
 
@@ -332,7 +391,5 @@ void analise_semantica(struct arvore_sintatica * arvore){
 		}
 		arvore = arvore->next;
 	}
-
-	insere_fim_saida();
 }
 

@@ -79,18 +79,21 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	arq_saida = fopen(nome_arq_saida, "w");
-	if(!arq_saida){
-		printf("\nErro ao abrir arquivo de saida: '%s'\n", nome_arq_saida);
-		exit(1);
-	}
-
 	printf("\nExecutando FrontEnd e Motor de Execucao.\n\n");
 
 	yyparse();
 	fclose(yyin);
 
 	analise_semantica( get_inicio_lista_arvore() );
+
+	arq_saida = fopen(nome_arq_saida, "w");
+	if(!arq_saida){
+		printf("\nErro ao abrir arquivo de saida: '%s'\n", nome_arq_saida);
+		exit(1);
+	}
+
+	backend( get_inicio_lista_arvore() );
+
 	fclose(arq_saida);
 
 	printf("\n");
