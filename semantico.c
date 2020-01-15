@@ -276,11 +276,36 @@ void valida_atr(char* id, struct no *no){
 }
 
 
+/* Insere inicio do arquivo de saida */
+void insere_inicio_saida(){
+
+	char* comentario = "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.";
+	char* print_int = "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%d\\0A\\00\", align 1";
+	char* print_float = "\n@.str.1 = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1";
+	char* inicio_main = "\n\ndefine i32 @main() #0 {";
+
+	fprintf(arq_saida, "%s", comentario);
+	fprintf(arq_saida, "%s", print_int);
+	fprintf(arq_saida, "%s", print_float);
+	fprintf(arq_saida, "%s", inicio_main);
+}
+
+
+/* Insere fim do arquivo de saida */
+void insere_fim_saida(){
+
+	char* fim_main = "\n}";
+	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #1";
+
+	fprintf(arq_saida, "%s", fim_main);
+	fprintf(arq_saida, "%s", declare_printf);
+}
+
+
 /* Analisador semantico */
 void analise_semantica(struct arvore_sintatica * arvore){
 
-	int teste = 99;
-	fprintf(arq_saida, "%d", teste);
+	insere_inicio_saida();
 
 	struct tipo_valor tipo_valor;
 
@@ -310,5 +335,7 @@ void analise_semantica(struct arvore_sintatica * arvore){
 		}
 		arvore = arvore->next;
 	}
+
+	insere_fim_saida();
 }
 
