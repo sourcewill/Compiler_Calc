@@ -114,7 +114,7 @@ struct arvore_sintatica * novo_arvore_sintatica(int tipo, struct no* exp, char* 
 	struct arvore_sintatica * novo = malloc(sizeof(struct arvore_sintatica));
 	novo->tipo = tipo;
 	novo->exp = exp;
-	if(tipo == 3){
+	if(tipo == 2){
 		novo->id = id;
 	}
 	novo->next = NULL;

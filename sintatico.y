@@ -46,9 +46,8 @@ int coluna = 1;
 inicio: item | inicio item
 
 item
-: exp END_LINE		{ fim_lista_arvore = novo_arvore_sintatica(1, $1, NULL, fim_lista_arvore); linha++; coluna=1; }
-| PRINT exp END_LINE	{ fim_lista_arvore = novo_arvore_sintatica(2, $2, NULL, fim_lista_arvore); linha++; coluna=1; }
-| ID ATR exp END_LINE	{ fim_lista_arvore = novo_arvore_sintatica(3, $3, $1, fim_lista_arvore); linha++; coluna=1; }
+: PRINT exp END_LINE	{ fim_lista_arvore = novo_arvore_sintatica(1, $2, NULL, fim_lista_arvore); linha++; coluna=1; }
+| ID ATR exp END_LINE	{ fim_lista_arvore = novo_arvore_sintatica(2, $3, $1, fim_lista_arvore); linha++; coluna=1; }
 ;
 
 exp

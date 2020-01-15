@@ -313,9 +313,6 @@ void analise_semantica(struct arvore_sintatica * arvore){
 
 		switch(arvore->tipo){
 			case 1:
-				valida_exp(arvore->exp);
-				break;
-			case 2:
 				tipo_valor = valida_exp(arvore->exp);
 				switch(tipo_valor.tipo){
 					case NUM_INT:
@@ -329,7 +326,7 @@ void analise_semantica(struct arvore_sintatica * arvore){
 						exit(1);
 				}
 				break;
-			case 3:
+			case 2:
 				valida_atr(arvore->id, arvore->exp);
 				break;
 		}
