@@ -1,0 +1,26 @@
+//Arquivo de entrada para o compilador
+//Descomente uma linha para testar
+
+//Exemplos de erros Lexicos
+// a = b $ c
+// print 5%2
+
+//Exemplos de erros Sintaticos
+// a = ((1+1)*(3/7)
+// + 3 * 7
+// ^ 7
+// a = print 5
+
+//Exemplos de erros Semanticos
+// 1 * 2.0
+// 5.3 - 7
+// a = 1 + b
+// print 5/0
+
+a = 1;
+b = 1;
+print (a + b);
+
+
+
+
