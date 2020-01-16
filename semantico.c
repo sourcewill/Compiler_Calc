@@ -40,17 +40,17 @@ void insere_fim_saida(){
 
 
 /* Insere alocacao de variavel INT no arquivo de saida */
-void insere_alloca_INT_saida(int id){
+void insere_alloca_INT_saida(int registrador){
 	char* alloca_inicio = "\n  %";
 	char* alloca_fim = " = alloca i32, align 4";
 
 	fprintf(arq_saida, "%s", alloca_inicio);
-	fprintf(arq_saida, "%d", id);
+	fprintf(arq_saida, "%d", registrador);
 	fprintf(arq_saida, "%s", alloca_fim);
 }
 
-/* Insere alocacao de variavel INT no arquivo de saida */
-void insere_store_INT_saida(int valor){
+/* Insere instruao store (valor -> registrador) */
+void insere_store_INT_saida(int valor, int registrador){
 	char* store_inicio = "\n  store i32 ";
 	char* store_meio = ", i32* %";
 	char* store_fim = ", align 4";
@@ -58,8 +58,59 @@ void insere_store_INT_saida(int valor){
 	fprintf(arq_saida, "%s", store_inicio);
 	fprintf(arq_saida, "%d", valor);
 	fprintf(arq_saida, "%s", store_meio);
-	fprintf(arq_saida, "%d", ID_REG);
+	fprintf(arq_saida, "%d", registrador);
 	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Insere instruao store (registrador -> registrador) */
+void insere_atribuicao_saida(int reg_origem, int reg_destino){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+
+
+	char* load_inicio = "\n  %";
+	char* load_meio = " = load i32, i32* %";
+	char* load_fim = ", align 4";
+
+	char* add_inicio = "\n  %";
+	char* add_meio = " = add nsw i32 %";
+	char* add_fim = ", 0";
+
+	char* store_inicio = "\n  store i32 %";
+	char* store_meio = ", i32* %";
+	char* store_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", load_inicio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", load_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", load_fim);
+
+	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "%d", novo_reg2);
+	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", add_fim);
+
+	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "%d", novo_reg2);
+	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Insere instruao store (registrador -> registrador) */
+void insere_load_INT_saida(int reg_origem, int reg_destino){
+	char* load_inicio = "\n  %";
+	char* load_meio = " = load i32, i32* %";
+	char* load_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", load_inicio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", load_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", load_fim);
 }
 
 /* Percorre alista de variaveis e alloca cada uma no arquivo de saida */
@@ -83,12 +134,47 @@ void alloca_variaveis(){
 	}
 }
 
+int percorre_expressao(struct no* no){
+
+	int registrador;
+
+	switch(no->tipo){
+		case NUM_INT:
+			registrador = ID_REG++;
+			insere_alloca_INT_saida(registrador);
+			insere_store_INT_saida( ((struct no_folha*)no)->valor.inteiro, registrador);
+			return registrador;
+			break;
+	}
+
+}
+
+/*EM CONSTRUCAO*/
+void percorre_arvore(struct arvore_sintatica * arvore){
+
+	while(arvore){
+
+		int registrador_retorno;
+
+		switch(arvore->tipo){
+			case 1:
+				break;
+			case 2:
+				registrador_retorno = percorre_expressao(arvore->exp);
+				insere_atribuicao_saida(registrador_retorno, get_id_variavel(arvore->id));
+				break;
+		}
+
+		arvore = arvore->next;
+	}
+}
+
 /* BACKEND */
 void backend(struct arvore_sintatica * arvore){
 
 	insere_inicio_saida();
 	alloca_variaveis();
-	
+	percorre_arvore(arvore);
 	insere_fim_saida();
 }
 
@@ -151,6 +237,21 @@ struct tipo_valor get_tipo_valor_variavel(char* nome){
 	}
 	tipo_valor.tipo = -1;
 	return tipo_valor;
+}
+
+
+/* Obtem o id de uma variavel, buscando por seu nome */
+int get_id_variavel(char* nome){
+
+	struct variavel* var = inicio_lista_vars;
+
+	while(var){
+		if( strcmp(nome, var->nome) == 0){
+			return var->id;
+		}
+		var = var->next;
+	}
+	return -1;
 }
 
 /* Altera o valor de uma variavel inteira, buscando por seu nome */
