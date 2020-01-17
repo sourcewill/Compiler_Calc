@@ -110,16 +110,6 @@ int insere_add_INT_saida(int reg1, int reg2){
 
 	insere_alloca_INT_saida(reg_resultado);
 
-	/*char* store_inicio = "\n  store i32 %";
-	char* store_meio = ", i32* %";
-	char* store_fim = ", align 4";
-
-	fprintf(arq_saida, "%s", store_inicio);
-	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", store_meio);
-	fprintf(arq_saida, "%d", reg_resultado);
-	fprintf(arq_saida, "%s", store_fim);*/
-
 	insere_store_INT_regs_saida(novo_reg3, reg_resultado);
 
 	return reg_resultado;
