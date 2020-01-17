@@ -47,7 +47,7 @@ void insere_alloca_INT_saida(int registrador){
 	fprintf(arq_saida, "%s", alloca_fim);
 }
 
-/* Insere instruao store (valor -> registrador) */
+/* Insere instrucao store (valor -> registrador) */
 void insere_store_INT_saida(int valor, int registrador){
 	char* store_inicio = "\n  store i32 ";
 	char* store_meio = ", i32* %";
@@ -57,6 +57,19 @@ void insere_store_INT_saida(int valor, int registrador){
 	fprintf(arq_saida, "%d", valor);
 	fprintf(arq_saida, "%s", store_meio);
 	fprintf(arq_saida, "%d", registrador);
+	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Insere instrucao store (registrador -> registrador) */
+void insere_store_INT_regs_saida(int reg_origem, int reg_destino){
+	char* store_inicio = "\n  store i32 %";
+	char* store_meio = ", i32* %";
+	char* store_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, "%d", reg_destino);
 	fprintf(arq_saida, "%s", store_fim);
 }
 
@@ -97,7 +110,7 @@ int insere_add_INT_saida(int reg1, int reg2){
 
 	insere_alloca_INT_saida(reg_resultado);
 
-	char* store_inicio = "\n  store i32 %";
+	/*char* store_inicio = "\n  store i32 %";
 	char* store_meio = ", i32* %";
 	char* store_fim = ", align 4";
 
@@ -105,7 +118,9 @@ int insere_add_INT_saida(int reg1, int reg2){
 	fprintf(arq_saida, "%d", novo_reg3);
 	fprintf(arq_saida, "%s", store_meio);
 	fprintf(arq_saida, "%d", reg_resultado);
-	fprintf(arq_saida, "%s", store_fim);
+	fprintf(arq_saida, "%s", store_fim);*/
+
+	insere_store_INT_regs_saida(novo_reg3, reg_resultado);
 
 	return reg_resultado;
 }
@@ -116,15 +131,7 @@ void insere_atribuicao_saida(int reg_origem, int reg_destino){
 	int novo_reg1 = ID_REG++;
 	int novo_reg2 = ID_REG++;
 
-	char* load_inicio = "\n  %";
-	char* load_meio = " = load i32, i32* %";
-	char* load_fim = ", align 4";
-
-	fprintf(arq_saida, "%s", load_inicio);
-	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", load_meio);
-	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", load_fim);
+	insere_load_INT_saida(reg_origem, novo_reg1);
 
 	char* add_inicio = "\n  %";
 	char* add_meio = " = add nsw i32 %";
@@ -136,15 +143,7 @@ void insere_atribuicao_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%d", novo_reg1);
 	fprintf(arq_saida, "%s", add_fim);
 
-	char* store_inicio = "\n  store i32 %";
-	char* store_meio = ", i32* %";
-	char* store_fim = ", align 4";
-
-	fprintf(arq_saida, "%s", store_inicio);
-	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", store_meio);
-	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", store_fim);
+	insere_store_INT_regs_saida(novo_reg2, reg_destino);
 }
 
 /* Insere instrucoes para print de um INT*/
@@ -153,15 +152,7 @@ void insere_print_INT_saida(int registrador){
 	int novo_reg1 = ID_REG++;
 	int novo_reg2 = ID_REG++;
 
-	char* load_inicio = "\n  %";
-	char* load_meio = " = load i32, i32* %";
-	char* load_fim = ", align 4";
-
-	fprintf(arq_saida, "%s", load_inicio);
-	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", load_meio);
-	fprintf(arq_saida, "%d", registrador);
-	fprintf(arq_saida, "%s", load_fim);
+	insere_load_INT_saida(registrador, novo_reg1);
 
 	char* call_inicio = "\n  %";
 	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %";
@@ -251,10 +242,8 @@ void percorre_arvore(struct arvore_sintatica * arvore){
 			
 			case 1:
 				tipo_registrador = percorre_expressao(no);
-				printf("\nChegou 1\n");
 				switch(tipo_registrador.tipo){
 					case NUM_INT:
-						printf("\nChegou 2\n");
 						insere_print_INT_saida(tipo_registrador.registrador);
 						break;
 				}
