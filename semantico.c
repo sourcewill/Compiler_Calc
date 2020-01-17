@@ -39,6 +39,7 @@ void alloca_variaveis(){
 				insere_alloca_INT_saida(var->id);
 				break;
 			case NUM_FLOAT:
+				insere_alloca_FLOAT_saida(var->id);
 				break;
 			default:
 				printf("\nErro interno: tipo de no desconhecido");
@@ -96,7 +97,7 @@ void insere_store_INT_regs_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%s", store_fim);
 }
 
-/* Insere instrucao store (registrador -> registrador) */
+/* Insere instrucao load para int */
 void insere_load_INT_saida(int reg_origem, int reg_destino){
 	char* load_inicio = "\n  %";
 	char* load_meio = " = load i32, i32* %";
@@ -133,6 +134,19 @@ void insere_fptosi_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%s", fptosi_meio);
 	fprintf(arq_saida, "%d", reg_origem);
 	fprintf(arq_saida, "%s", fptosi_fim);
+}
+
+/* Insere instrucao fpext (converte float para double)*/
+void insere_fpext_saida(int reg_origem, int reg_destino){
+	char* fpext_inicio = "\n  %";
+	char* fpext_meio = " = fpext float %";
+	char* fpext_fim = " to double";
+
+	fprintf(arq_saida, "%s", fpext_inicio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", fpext_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", fpext_fim);
 }
 
 /* Insere instrucao de soma e retorna o registrador que contem o resultado */
@@ -288,7 +302,7 @@ int insere_pow_INT_saida(int reg1, int reg2){
 }
 
 
-/* Insere instruao store (registrador -> registrador) */
+/* Insere instruao de atribuicao de int*/
 void insere_atribuicao_INT_saida(int reg_origem, int reg_destino){
 
 	int novo_reg1 = ID_REG++;
@@ -325,6 +339,100 @@ void insere_print_INT_saida(int registrador){
 	fprintf(arq_saida, "%d", novo_reg2);
 	fprintf(arq_saida, "%s", call_meio);
 	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", call_fim);
+}
+
+
+/*======================== FLOATS ===============================*/
+
+/* Insere alocacao de variavel FLOAT no arquivo de saida */
+void insere_alloca_FLOAT_saida(int registrador){
+	char* alloca_inicio = "\n  %";
+	char* alloca_fim = " = alloca float, align 4";
+
+	fprintf(arq_saida, "%s", alloca_inicio);
+	fprintf(arq_saida, "%d", registrador);
+	fprintf(arq_saida, "%s", alloca_fim);
+}
+
+/* Insere instrucao load */
+void insere_load_FLOAT_saida(int reg_origem, int reg_destino){
+	char* load_inicio = "\n  %";
+	char* load_meio = " = load float, float* %";
+	char* load_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", load_inicio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", load_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", load_fim);
+}
+
+/* Insere instrucao store (valor -> registrador) */
+void insere_store_FLOAT_saida(float valor, int registrador){
+	char* store_inicio = "\n  store float ";
+	char* store_meio = ", float* %";
+	char* store_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "%x", *(unsigned int*)&valor ); /*CORRIGIR CONVERSAO PARA HEX AQUI*/
+	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, "%d", registrador);
+	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Insere instrucao store (registrador -> registrador) */
+void insere_store_FLOAT_regs_saida(int reg_origem, int reg_destino){
+	char* store_inicio = "\n  store float %";
+	char* store_meio = ", float* %";
+	char* store_fim = ", align 4";
+
+	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", store_fim);
+}
+
+/* Insere instruao de atribuicao de float*/
+void insere_atribuicao_FLOAT_saida(int reg_origem, int reg_destino){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+
+	insere_load_FLOAT_saida(reg_origem, novo_reg1);
+
+	char* add_inicio = "\n  %";
+	char* add_meio = " = fadd float %";
+	char* add_fim = ", 0x0000000000000000";
+
+	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "%d", novo_reg2);
+	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", add_fim);
+
+	insere_store_FLOAT_regs_saida(novo_reg2, reg_destino);
+}
+
+/* Insere instrucoes para print de um FLOAT*/
+void insere_print_FLOAT_saida(int registrador){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+	int novo_reg3 = ID_REG++;
+
+	insere_load_FLOAT_saida(registrador, novo_reg1);
+	insere_fpext_saida(novo_reg1, novo_reg2);
+
+	char* call_inicio = "\n  %";
+	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), double %";
+	char* call_fim = ")";
+
+	fprintf(arq_saida, "%s", call_inicio);
+	fprintf(arq_saida, "%d", novo_reg3);
+	fprintf(arq_saida, "%s", call_meio);
+	fprintf(arq_saida, "%d", novo_reg2);
 	fprintf(arq_saida, "%s", call_fim);
 }
 
@@ -392,6 +500,13 @@ struct tipo_registrador percorre_expressao(struct no* no){
 			tipo_registrador.tipo = NUM_INT;
 			tipo_registrador.registrador = registrador;
 			return tipo_registrador;
+		case NUM_FLOAT:
+			registrador = ID_REG++;
+			insere_alloca_FLOAT_saida(registrador);
+			insere_store_FLOAT_saida( ((struct no_folha*)no)->valor.inteiro, registrador);
+			tipo_registrador.tipo = NUM_FLOAT;
+			tipo_registrador.registrador = registrador;
+			return tipo_registrador;
 		case ID:
 			tipo_registrador.registrador = get_id_variavel( ((struct no_folha*)no)->valor.string );
 			tipo_valor = get_tipo_valor_variavel( ((struct no_folha*)no)->valor.string );
@@ -431,6 +546,9 @@ void percorre_arvore(struct arvore_sintatica * arvore){
 					case NUM_INT:
 						insere_print_INT_saida(tipo_registrador.registrador);
 						break;
+					case NUM_FLOAT:
+						insere_print_FLOAT_saida(tipo_registrador.registrador);
+						break;
 				}
 				break;
 			case 2:
@@ -438,6 +556,9 @@ void percorre_arvore(struct arvore_sintatica * arvore){
 				switch(tipo_registrador.tipo){
 					case NUM_INT:
 						insere_atribuicao_INT_saida(tipo_registrador.registrador, get_id_variavel(arvore->id));
+						break;
+					case NUM_FLOAT:
+						insere_atribuicao_FLOAT_saida(tipo_registrador.registrador, get_id_variavel(arvore->id));
 						break;
 				}
 				break;

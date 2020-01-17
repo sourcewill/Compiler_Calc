@@ -17,6 +17,5 @@
 // a = 1 + b
 // print 5/0
 
-a = 3;
-b = 2;
-print a ^ b;
+a = 2.5;
+print a;
