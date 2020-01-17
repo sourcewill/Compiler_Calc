@@ -27,6 +27,27 @@ void insere_inicio_saida(){
 	fprintf(arq_saida, "%s", inicio_main);
 }
 
+/* Percorre alista de variaveis e alloca cada uma no arquivo de saida */
+void alloca_variaveis(){
+
+	struct tipo_valor tipo_valor;
+	struct variavel* var = inicio_lista_vars;
+
+	while(var){
+		switch(var->tipo){
+			case NUM_INT:
+				insere_alloca_INT_saida(var->id);
+				break;
+			case NUM_FLOAT:
+				break;
+			default:
+				printf("\nErro interno: tipo de no desconhecido");
+			exit(1);
+		}
+		var = var->next;
+	}
+}
+
 /* Insere fim do arquivo de saida */
 void insere_fim_saida(){
 
@@ -115,8 +136,39 @@ int insere_add_INT_saida(int reg1, int reg2){
 	return reg_resultado;
 }
 
+/* Insere instrucao de subtracao e retorna o registrador que contem o resultado */
+int insere_sub_INT_saida(int reg1, int reg2){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+	int novo_reg3 = ID_REG++;
+	int reg_resultado = ID_REG++;
+
+	insere_load_INT_saida(reg1, novo_reg1);
+	insere_load_INT_saida(reg2, novo_reg2);
+
+	char* sub_inicio = "\n  %";
+	char* sub_meio = " = sub nsw i32 %";
+	char* sub_fim = ", %";
+
+	fprintf(arq_saida, "%s", sub_inicio);
+	fprintf(arq_saida, "%d", novo_reg3);
+	fprintf(arq_saida, "%s", sub_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", sub_fim);
+	fprintf(arq_saida, "%d", novo_reg2);
+
+	insere_alloca_INT_saida(reg_resultado);
+
+	insere_store_INT_regs_saida(novo_reg3, reg_resultado);
+
+	return reg_resultado;
+
+}
+
+
 /* Insere instruao store (registrador -> registrador) */
-void insere_atribuicao_saida(int reg_origem, int reg_destino){
+void insere_atribuicao_INT_saida(int reg_origem, int reg_destino){
 
 	int novo_reg1 = ID_REG++;
 	int novo_reg2 = ID_REG++;
@@ -155,27 +207,6 @@ void insere_print_INT_saida(int registrador){
 	fprintf(arq_saida, "%s", call_fim);
 }
 
-/* Percorre alista de variaveis e alloca cada uma no arquivo de saida */
-void alloca_variaveis(){
-
-	struct tipo_valor tipo_valor;
-	struct variavel* var = inicio_lista_vars;
-
-	while(var){
-		switch(var->tipo){
-			case NUM_INT:
-				insere_alloca_INT_saida(var->id);
-				break;
-			case NUM_FLOAT:
-				break;
-			default:
-				printf("\nErro interno: tipo de no desconhecido");
-			exit(1);
-		}
-		var = var->next;
-	}
-}
-
 struct tipo_registrador percorre_expressao(struct no* no){
 
 	int registrador, reg1, reg2;
@@ -190,6 +221,16 @@ struct tipo_registrador percorre_expressao(struct no* no){
 				case NUM_INT:
 					tipo_registrador.tipo = NUM_INT;
 					tipo_registrador.registrador = insere_add_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
+					return tipo_registrador;
+			}
+			break;
+		case SUB:
+			tipo_registrador_l = percorre_expressao(no->l);
+			tipo_registrador_r = percorre_expressao(no->r);
+			switch(tipo_registrador_l.tipo){
+				case NUM_INT:
+					tipo_registrador.tipo = NUM_INT;
+					tipo_registrador.registrador = insere_sub_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
 					return tipo_registrador;
 			}
 			break;
@@ -212,6 +253,9 @@ struct tipo_registrador percorre_expressao(struct no* no){
 					break;
 			}
 			return tipo_registrador;
+		default:
+			printf("\nErro interno: tipo de no desconhecido");
+			exit(1);
 	}
 
 }
@@ -240,7 +284,11 @@ void percorre_arvore(struct arvore_sintatica * arvore){
 				break;
 			case 2:
 				tipo_registrador = percorre_expressao(no);
-				insere_atribuicao_saida(tipo_registrador.registrador, get_id_variavel(arvore->id));
+				switch(tipo_registrador.tipo){
+					case NUM_INT:
+						insere_atribuicao_INT_saida(tipo_registrador.registrador, get_id_variavel(arvore->id));
+						break;
+				}
 				break;
 		}
 
