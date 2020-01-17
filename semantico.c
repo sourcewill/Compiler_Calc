@@ -52,9 +52,11 @@ void alloca_variaveis(){
 void insere_fim_saida(){
 
 	char* fim_main = "\n  ret i32 0\n}";
-	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #1";
+	char* declare_pow = "\n\ndeclare double @pow(double, double) #1";
+	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #2";
 
 	fprintf(arq_saida, "%s", fim_main);
+	fprintf(arq_saida, "%s", declare_pow);
 	fprintf(arq_saida, "%s", declare_printf);
 }
 
@@ -94,7 +96,7 @@ void insere_store_INT_regs_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%s", store_fim);
 }
 
-/* Insere instruao store (registrador -> registrador) */
+/* Insere instrucao store (registrador -> registrador) */
 void insere_load_INT_saida(int reg_origem, int reg_destino){
 	char* load_inicio = "\n  %";
 	char* load_meio = " = load i32, i32* %";
@@ -105,6 +107,32 @@ void insere_load_INT_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%s", load_meio);
 	fprintf(arq_saida, "%d", reg_origem);
 	fprintf(arq_saida, "%s", load_fim);
+}
+
+/* Insere instrucao sitofp (converte inteiro para double)*/
+void insere_sitofp_saida(int reg_origem, int reg_destino){
+	char* sitofp_inicio = "\n  %";
+	char* sitofp_meio = " = sitofp i32 %";
+	char* sitofp_fim = " to double";
+
+	fprintf(arq_saida, "%s", sitofp_inicio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", sitofp_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", sitofp_fim);
+}
+
+/* Insere instrucao fptosi (converte double para inteiro)*/
+void insere_fptosi_saida(int reg_origem, int reg_destino){
+	char* fptosi_inicio = "\n  %";
+	char* fptosi_meio = " = fptosi double %";
+	char* fptosi_fim = " to i32";
+
+	fprintf(arq_saida, "%s", fptosi_inicio);
+	fprintf(arq_saida, "%d", reg_destino);
+	fprintf(arq_saida, "%s", fptosi_meio);
+	fprintf(arq_saida, "%d", reg_origem);
+	fprintf(arq_saida, "%s", fptosi_fim);
 }
 
 /* Insere instrucao de soma e retorna o registrador que contem o resultado */
@@ -223,6 +251,42 @@ int insere_div_INT_saida(int reg1, int reg2){
 	return reg_resultado;
 }
 
+/* Insere instrucao de potencia e retorna o registrador que contem o resultado */
+int insere_pow_INT_saida(int reg1, int reg2){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+	int novo_reg3 = ID_REG++;
+	int novo_reg4 = ID_REG++;
+	int novo_reg5 = ID_REG++;
+	int novo_reg6 = ID_REG++;
+	int reg_resultado = ID_REG++;
+
+	insere_load_INT_saida(reg1, novo_reg1);
+	insere_load_INT_saida(reg2, novo_reg2);
+	insere_sitofp_saida(novo_reg1, novo_reg3);
+	insere_sitofp_saida(novo_reg2, novo_reg4);
+
+	char* pow_inicio = "\n  %";
+	char* pow_meio = " = call double @pow(double %";
+	char* pow_meio2 = ", double %";
+	char* pow_fim = ") #3";
+
+	fprintf(arq_saida, "%s", pow_inicio);
+	fprintf(arq_saida, "%d", novo_reg5);
+	fprintf(arq_saida, "%s", pow_meio);
+	fprintf(arq_saida, "%d", novo_reg3);
+	fprintf(arq_saida, "%s", pow_meio2);
+	fprintf(arq_saida, "%d", novo_reg4);
+	fprintf(arq_saida, "%s", pow_fim);
+
+	insere_fptosi_saida(novo_reg5, novo_reg6);
+	insere_alloca_INT_saida(reg_resultado);
+	insere_store_INT_regs_saida(novo_reg6, reg_resultado);
+
+	return reg_resultado;
+}
+
 
 /* Insere instruao store (registrador -> registrador) */
 void insere_atribuicao_INT_saida(int reg_origem, int reg_destino){
@@ -298,6 +362,16 @@ struct tipo_registrador percorre_expressao(struct no* no){
 				case NUM_INT:
 					tipo_registrador.tipo = NUM_INT;
 					tipo_registrador.registrador = insere_mul_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
+					return tipo_registrador;
+			}
+			break;
+		case POW:
+			tipo_registrador_l = percorre_expressao(no->l);
+			tipo_registrador_r = percorre_expressao(no->r);
+			switch(tipo_registrador_l.tipo){
+				case NUM_INT:
+					tipo_registrador.tipo = NUM_INT;
+					tipo_registrador.registrador = insere_pow_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
 					return tipo_registrador;
 			}
 			break;

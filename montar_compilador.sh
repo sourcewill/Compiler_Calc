@@ -12,7 +12,7 @@ echo $'\nExecutando compilador...'
 ./calculadora entrada.calc saida.ll
 
 echo $'\nCompilando codigo intermediario gerado...'
-clang -o saida saida.ll -w
+clang -o saida saida.ll -w -lm
 
 echo $'\nExecutando saida...\n'
 ./saida
