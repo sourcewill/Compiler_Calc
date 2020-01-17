@@ -19,6 +19,12 @@ struct tipo_valor{
 	union numero valor;
 };
 
+/* Estrutura para encapsular dois retornos*/
+struct tipo_registrador{
+	int tipo;
+	int registrador;
+};
+
 
 /* Valida uma expressao */
 struct tipo_valor valida_exp(struct no *);
