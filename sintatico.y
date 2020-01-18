@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "arvore.h"
 #include "semantico.h"
+#include "backend.h"
 
 extern FILE* yyin;
 FILE* arq_saida;
@@ -123,7 +124,7 @@ int main(int argc, char* argv[]) {
 	fclose(arq_saida);
 
 	printf("\nArquivo de saida '%s' criado no atual diretorio.", nome_arq_saida);
-	printf("\nPara gerar um executavel use o seguinte comando:\nclang %s -o <nome_executavel>\n\n", nome_arq_saida);
+	printf("\nPara gerar um executavel use o seguinte comando:\nclang %s -o <nome_executavel> -lm\n\n", nome_arq_saida);
 	return 0;
 }
 

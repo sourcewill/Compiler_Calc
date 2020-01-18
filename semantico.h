@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 /* Definicao de numero */
 union numero{
 	int inteiro;
@@ -17,12 +19,6 @@ struct variavel{
 struct tipo_valor{
 	int tipo;
 	union numero valor;
-};
-
-/* Estrutura para encapsular dois retornos*/
-struct tipo_registrador{
-	int tipo;
-	int registrador;
 };
 
 
