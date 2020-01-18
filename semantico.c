@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <inttypes.h>
 #include "arvore.h"
 #include "semantico.h"
 #include "sintatico.tab.h"
@@ -348,7 +349,7 @@ void insere_print_INT_saida(int registrador){
 /* Insere alocacao de variavel FLOAT no arquivo de saida */
 void insere_alloca_FLOAT_saida(int registrador){
 	char* alloca_inicio = "\n  %";
-	char* alloca_fim = " = alloca float, align 4";
+	char* alloca_fim = " = alloca double, align 4";
 
 	fprintf(arq_saida, "%s", alloca_inicio);
 	fprintf(arq_saida, "%d", registrador);
@@ -358,7 +359,7 @@ void insere_alloca_FLOAT_saida(int registrador){
 /* Insere instrucao load */
 void insere_load_FLOAT_saida(int reg_origem, int reg_destino){
 	char* load_inicio = "\n  %";
-	char* load_meio = " = load float, float* %";
+	char* load_meio = " = load double, double* %";
 	char* load_fim = ", align 4";
 
 	fprintf(arq_saida, "%s", load_inicio);
@@ -368,14 +369,29 @@ void insere_load_FLOAT_saida(int reg_origem, int reg_destino){
 	fprintf(arq_saida, "%s", load_fim);
 }
 
+/* Funcao para converter float em hex 64 bits*/
+void FPtoHexString (char *fpString, double fpVal) {
+	sprintf (fpString, "0x%"PRIx64, *((uint64_t *) &fpVal));
+}
+
 /* Insere instrucao store (valor -> registrador) */
 void insere_store_FLOAT_saida(float valor, int registrador){
-	char* store_inicio = "\n  store float ";
-	char* store_meio = ", float* %";
+
+	char fpString[64];
+	char convertido[64];
+	double fpVal = 0.0;
+
+	sprintf(convertido, "%f", valor);
+	sscanf (convertido, "%lf", &fpVal);
+	FPtoHexString(fpString, fpVal);
+	printf ("\n HEX: %s\n", fpString);
+
+	char* store_inicio = "\n  store double ";
+	char* store_meio = ", double* %";
 	char* store_fim = ", align 4";
 
 	fprintf(arq_saida, "%s", store_inicio);
-	fprintf(arq_saida, "%x", *(unsigned int*)&valor ); /*CORRIGIR CONVERSAO PARA HEX AQUI*/
+	fprintf(arq_saida, "%s", fpString); /*CORRIGIR CONVERSAO PARA HEX AQUI*/
 	fprintf(arq_saida, "%s", store_meio);
 	fprintf(arq_saida, "%d", registrador);
 	fprintf(arq_saida, "%s", store_fim);
@@ -383,8 +399,8 @@ void insere_store_FLOAT_saida(float valor, int registrador){
 
 /* Insere instrucao store (registrador -> registrador) */
 void insere_store_FLOAT_regs_saida(int reg_origem, int reg_destino){
-	char* store_inicio = "\n  store float %";
-	char* store_meio = ", float* %";
+	char* store_inicio = "\n  store double %";
+	char* store_meio = ", double* %";
 	char* store_fim = ", align 4";
 
 	fprintf(arq_saida, "%s", store_inicio);
@@ -403,7 +419,7 @@ void insere_atribuicao_FLOAT_saida(int reg_origem, int reg_destino){
 	insere_load_FLOAT_saida(reg_origem, novo_reg1);
 
 	char* add_inicio = "\n  %";
-	char* add_meio = " = fadd float %";
+	char* add_meio = " = fadd double %";
 	char* add_fim = ", 0x0000000000000000";
 
 	fprintf(arq_saida, "%s", add_inicio);
@@ -420,19 +436,17 @@ void insere_print_FLOAT_saida(int registrador){
 
 	int novo_reg1 = ID_REG++;
 	int novo_reg2 = ID_REG++;
-	int novo_reg3 = ID_REG++;
 
 	insere_load_FLOAT_saida(registrador, novo_reg1);
-	insere_fpext_saida(novo_reg1, novo_reg2);
 
 	char* call_inicio = "\n  %";
 	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), double %";
 	char* call_fim = ")";
 
 	fprintf(arq_saida, "%s", call_inicio);
-	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", call_meio);
 	fprintf(arq_saida, "%d", novo_reg2);
+	fprintf(arq_saida, "%s", call_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
 	fprintf(arq_saida, "%s", call_fim);
 }
 
@@ -503,7 +517,7 @@ struct tipo_registrador percorre_expressao(struct no* no){
 		case NUM_FLOAT:
 			registrador = ID_REG++;
 			insere_alloca_FLOAT_saida(registrador);
-			insere_store_FLOAT_saida( ((struct no_folha*)no)->valor.inteiro, registrador);
+			insere_store_FLOAT_saida( ((struct no_folha*)no)->valor.real, registrador);
 			tipo_registrador.tipo = NUM_FLOAT;
 			tipo_registrador.registrador = registrador;
 			return tipo_registrador;
