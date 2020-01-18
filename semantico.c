@@ -440,6 +440,35 @@ int insere_add_FLOAT_saida(int reg1, int reg2){
 	return reg_resultado;
 }
 
+/* Insere instrucao de subtracao e retorna o registrador que contem o resultado */
+int insere_sub_FLOAT_saida(int reg1, int reg2){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+	int novo_reg3 = ID_REG++;
+	int reg_resultado = ID_REG++;
+
+	insere_load_FLOAT_saida(reg1, novo_reg1);
+	insere_load_FLOAT_saida(reg2, novo_reg2);
+
+	char* sub_inicio = "\n  %";
+	char* sub_meio = " = fsub double %";
+	char* sub_fim = ", %";
+
+	fprintf(arq_saida, "%s", sub_inicio);
+	fprintf(arq_saida, "%d", novo_reg3);
+	fprintf(arq_saida, "%s", sub_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", sub_fim);
+	fprintf(arq_saida, "%d", novo_reg2);
+
+	insere_alloca_FLOAT_saida(reg_resultado);
+
+	insere_store_FLOAT_regs_saida(novo_reg3, reg_resultado);
+
+	return reg_resultado;
+}
+
 /* Insere instruao de atribuicao de float*/
 void insere_atribuicao_FLOAT_saida(int reg_origem, int reg_destino){
 
@@ -509,6 +538,10 @@ struct tipo_registrador percorre_expressao(struct no* no){
 					tipo_registrador.tipo = NUM_INT;
 					tipo_registrador.registrador = insere_sub_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
 					return tipo_registrador;
+				case NUM_FLOAT:
+					tipo_registrador.tipo = NUM_FLOAT;
+					tipo_registrador.registrador = insere_sub_FLOAT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
+					return tipo_registrador;				
 			}
 			break;
 		case MUL:
