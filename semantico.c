@@ -469,6 +469,35 @@ int insere_sub_FLOAT_saida(int reg1, int reg2){
 	return reg_resultado;
 }
 
+/* Insere instrucao de multiplicacao e retorna o registrador que contem o resultado */
+int insere_mul_FLOAT_saida(int reg1, int reg2){
+
+	int novo_reg1 = ID_REG++;
+	int novo_reg2 = ID_REG++;
+	int novo_reg3 = ID_REG++;
+	int reg_resultado = ID_REG++;
+
+	insere_load_FLOAT_saida(reg1, novo_reg1);
+	insere_load_FLOAT_saida(reg2, novo_reg2);
+
+	char* mul_inicio = "\n  %";
+	char* mul_meio = " = fmul double %";
+	char* mul_fim = ", %";
+
+	fprintf(arq_saida, "%s", mul_inicio);
+	fprintf(arq_saida, "%d", novo_reg3);
+	fprintf(arq_saida, "%s", mul_meio);
+	fprintf(arq_saida, "%d", novo_reg1);
+	fprintf(arq_saida, "%s", mul_fim);
+	fprintf(arq_saida, "%d", novo_reg2);
+
+	insere_alloca_FLOAT_saida(reg_resultado);
+
+	insere_store_FLOAT_regs_saida(novo_reg3, reg_resultado);
+
+	return reg_resultado;
+}
+
 /* Insere instruao de atribuicao de float*/
 void insere_atribuicao_FLOAT_saida(int reg_origem, int reg_destino){
 
@@ -551,6 +580,10 @@ struct tipo_registrador percorre_expressao(struct no* no){
 				case NUM_INT:
 					tipo_registrador.tipo = NUM_INT;
 					tipo_registrador.registrador = insere_mul_INT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
+					return tipo_registrador;
+				case NUM_FLOAT:
+					tipo_registrador.tipo = NUM_FLOAT;
+					tipo_registrador.registrador = insere_mul_FLOAT_saida(tipo_registrador_l.registrador, tipo_registrador_r.registrador);
 					return tipo_registrador;
 			}
 			break;
