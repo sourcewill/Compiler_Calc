@@ -17,15 +17,10 @@ int ID_REG = 1;
 /* Insere inicio do arquivo de saida */
 void insere_inicio_saida(){
 
-	char* comentario = "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.";
-	char* print_int = "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%d\\0A\\00\", align 1";
-	char* print_float = "\n@.str.1 = private unnamed_addr constant [6 x i8] c\"%.2f\\0A\\00\", align 1";
-	char* inicio_main = "\n\ndefine i32 @main() #0 {";
-
-	fprintf(arq_saida, "%s", comentario);
-	fprintf(arq_saida, "%s", print_int);
-	fprintf(arq_saida, "%s", print_float);
-	fprintf(arq_saida, "%s", inicio_main);
+	fprintf(arq_saida, "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.");
+	fprintf(arq_saida, "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%%d\\0A\\00\", align 1");
+	fprintf(arq_saida, "\n@.str.1 = private unnamed_addr constant [6 x i8] c\"%%.2f\\0A\\00\", align 1");
+	fprintf(arq_saida, "\n\ndefine i32 @main() #0 {");
 }
 
 /* Percorre alista de variaveis e alloca cada uma no arquivo de saida */
@@ -56,101 +51,81 @@ void alloca_variaveis(){
 /* Insere fim do arquivo de saida */
 void insere_fim_saida(){
 
-	char* fim_main = "\n  ret i32 0\n}";
-	char* declare_pow = "\n\ndeclare double @pow(double, double) #1";
-	char* declare_printf = "\n\ndeclare i32 @printf(i8*, ...) #2";
-
-	fprintf(arq_saida, "%s", fim_main);
-	fprintf(arq_saida, "%s", declare_pow);
-	fprintf(arq_saida, "%s", declare_printf);
+	fprintf(arq_saida, "\n  ret i32 0\n}");
+	fprintf(arq_saida, "\n\ndeclare double @pow(double, double) #1");
+	fprintf(arq_saida, "\n\ndeclare i32 @printf(i8*, ...) #2");
 }
+
+
+/*======================== OPERACOES COM INT ===============================*/
+
 
 /* Insere alocacao de variavel INT no arquivo de saida */
 void insere_alloca_INT_saida(int registrador){
-	char* alloca_inicio = "\n  %";
-	char* alloca_fim = " = alloca i32, align 4";
 
-	fprintf(arq_saida, "%s", alloca_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", registrador);
-	fprintf(arq_saida, "%s", alloca_fim);
+	fprintf(arq_saida, " = alloca i32, align 4");
 }
 
 /* Insere instrucao store (valor -> registrador) */
 void insere_store_INT_saida(int valor, int registrador){
-	char* store_inicio = "\n  store i32 ";
-	char* store_meio = ", i32* %";
-	char* store_fim = ", align 4";
 
-	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "\n  store i32 ");
 	fprintf(arq_saida, "%d", valor);
-	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, ", i32* %%");
 	fprintf(arq_saida, "%d", registrador);
-	fprintf(arq_saida, "%s", store_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Insere instrucao store (registrador -> registrador) */
 void insere_store_INT_regs_saida(int reg_origem, int reg_destino){
-	char* store_inicio = "\n  store i32 %";
-	char* store_meio = ", i32* %";
-	char* store_fim = ", align 4";
 
-	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "\n  store i32 %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, ", i32* %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", store_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Insere instrucao load para int */
 void insere_load_INT_saida(int reg_origem, int reg_destino){
-	char* load_inicio = "\n  %";
-	char* load_meio = " = load i32, i32* %";
-	char* load_fim = ", align 4";
 
-	fprintf(arq_saida, "%s", load_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", load_meio);
+	fprintf(arq_saida, " = load i32, i32* %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", load_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Insere instrucao sitofp (converte inteiro para double)*/
 void insere_sitofp_saida(int reg_origem, int reg_destino){
-	char* sitofp_inicio = "\n  %";
-	char* sitofp_meio = " = sitofp i32 %";
-	char* sitofp_fim = " to double";
 
-	fprintf(arq_saida, "%s", sitofp_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", sitofp_meio);
+	fprintf(arq_saida, " = sitofp i32 %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", sitofp_fim);
+	fprintf(arq_saida, " to double");
 }
 
 /* Insere instrucao fptosi (converte double para inteiro)*/
 void insere_fptosi_saida(int reg_origem, int reg_destino){
-	char* fptosi_inicio = "\n  %";
-	char* fptosi_meio = " = fptosi double %";
-	char* fptosi_fim = " to i32";
 
-	fprintf(arq_saida, "%s", fptosi_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", fptosi_meio);
+	fprintf(arq_saida, " = fptosi double %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", fptosi_fim);
+	fprintf(arq_saida, " to i32");
 }
 
 /* Insere instrucao fpext (converte float para double)*/
 void insere_fpext_saida(int reg_origem, int reg_destino){
-	char* fpext_inicio = "\n  %";
-	char* fpext_meio = " = fpext float %";
-	char* fpext_fim = " to double";
 
-	fprintf(arq_saida, "%s", fpext_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", fpext_meio);
+	fprintf(arq_saida, " = fpext float %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", fpext_fim);
+	fprintf(arq_saida, " to double");
 }
 
 /* Insere instrucao de soma e retorna o registrador que contem o resultado */
@@ -164,15 +139,11 @@ int insere_add_INT_saida(int reg1, int reg2){
 	insere_load_INT_saida(reg1, novo_reg1);
 	insere_load_INT_saida(reg2, novo_reg2);
 
-	char* add_inicio = "\n  %";
-	char* add_meio = " = add nsw i32 %";
-	char* add_fim = ", %";
-
-	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, " = add nsw i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", add_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_INT_saida(reg_resultado);
@@ -193,15 +164,11 @@ int insere_sub_INT_saida(int reg1, int reg2){
 	insere_load_INT_saida(reg1, novo_reg1);
 	insere_load_INT_saida(reg2, novo_reg2);
 
-	char* sub_inicio = "\n  %";
-	char* sub_meio = " = sub nsw i32 %";
-	char* sub_fim = ", %";
-
-	fprintf(arq_saida, "%s", sub_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", sub_meio);
+	fprintf(arq_saida, " = sub nsw i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", sub_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_INT_saida(reg_resultado);
@@ -222,15 +189,11 @@ int insere_mul_INT_saida(int reg1, int reg2){
 	insere_load_INT_saida(reg1, novo_reg1);
 	insere_load_INT_saida(reg2, novo_reg2);
 
-	char* mul_inicio = "\n  %";
-	char* mul_meio = " = mul nsw i32 %";
-	char* mul_fim = ", %";
-
-	fprintf(arq_saida, "%s", mul_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", mul_meio);
+	fprintf(arq_saida, " = mul nsw i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", mul_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_INT_saida(reg_resultado);
@@ -251,15 +214,11 @@ int insere_div_INT_saida(int reg1, int reg2){
 	insere_load_INT_saida(reg1, novo_reg1);
 	insere_load_INT_saida(reg2, novo_reg2);
 
-	char* mul_inicio = "\n  %";
-	char* mul_meio = " = sdiv i32 %";
-	char* mul_fim = ", %";
-
-	fprintf(arq_saida, "%s", mul_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", mul_meio);
+	fprintf(arq_saida, " = sdiv i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", mul_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_INT_saida(reg_resultado);
@@ -285,18 +244,13 @@ int insere_pow_INT_saida(int reg1, int reg2){
 	insere_sitofp_saida(novo_reg1, novo_reg3);
 	insere_sitofp_saida(novo_reg2, novo_reg4);
 
-	char* pow_inicio = "\n  %";
-	char* pow_meio = " = call double @pow(double %";
-	char* pow_meio2 = ", double %";
-	char* pow_fim = ") #3";
-
-	fprintf(arq_saida, "%s", pow_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg5);
-	fprintf(arq_saida, "%s", pow_meio);
+	fprintf(arq_saida, " = call double @pow(double %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", pow_meio2);
+	fprintf(arq_saida, ", double %%");
 	fprintf(arq_saida, "%d", novo_reg4);
-	fprintf(arq_saida, "%s", pow_fim);
+	fprintf(arq_saida, ") #3");
 
 	insere_fptosi_saida(novo_reg5, novo_reg6);
 	insere_alloca_INT_saida(reg_resultado);
@@ -314,15 +268,11 @@ void insere_atribuicao_INT_saida(int reg_origem, int reg_destino){
 
 	insere_load_INT_saida(reg_origem, novo_reg1);
 
-	char* add_inicio = "\n  %";
-	char* add_meio = " = add nsw i32 %";
-	char* add_fim = ", 0";
-
-	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, " = add nsw i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", add_fim);
+	fprintf(arq_saida, ", 0");
 
 	insere_store_INT_regs_saida(novo_reg2, reg_destino);
 }
@@ -335,41 +285,33 @@ void insere_print_INT_saida(int registrador){
 
 	insere_load_INT_saida(registrador, novo_reg1);
 
-	char* call_inicio = "\n  %";
-	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %";
-	char* call_fim = ")";
-
-	fprintf(arq_saida, "%s", call_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", call_meio);
+	fprintf(arq_saida, " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", call_fim);
+	fprintf(arq_saida, ")");
 }
 
 
-/*======================== FLOATS ===============================*/
+/*======================== OPERACOES COM FLOAT ===============================*/
+
 
 /* Insere alocacao de variavel FLOAT no arquivo de saida */
 void insere_alloca_FLOAT_saida(int registrador){
-	char* alloca_inicio = "\n  %";
-	char* alloca_fim = " = alloca double, align 4";
 
-	fprintf(arq_saida, "%s", alloca_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", registrador);
-	fprintf(arq_saida, "%s", alloca_fim);
+	fprintf(arq_saida, " = alloca double, align 4");
 }
 
 /* Insere instrucao load */
 void insere_load_FLOAT_saida(int reg_origem, int reg_destino){
-	char* load_inicio = "\n  %";
-	char* load_meio = " = load double, double* %";
-	char* load_fim = ", align 4";
 
-	fprintf(arq_saida, "%s", load_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", load_meio);
+	fprintf(arq_saida, " = load double, double* %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", load_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Funcao para converter float em hex 64 bits*/
@@ -387,28 +329,21 @@ void insere_store_FLOAT_saida(float valor, int registrador){
 	sscanf (convertido, "%lf", &fpVal);
 	FPtoHexString(fpString, fpVal);
 
-	char* store_inicio = "\n  store double ";
-	char* store_meio = ", double* %";
-	char* store_fim = ", align 4";
-
-	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "\n  store double ");
 	fprintf(arq_saida, "%s", fpString);
-	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, ", double* %%");
 	fprintf(arq_saida, "%d", registrador);
-	fprintf(arq_saida, "%s", store_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Insere instrucao store (registrador -> registrador) */
 void insere_store_FLOAT_regs_saida(int reg_origem, int reg_destino){
-	char* store_inicio = "\n  store double %";
-	char* store_meio = ", double* %";
-	char* store_fim = ", align 4";
 
-	fprintf(arq_saida, "%s", store_inicio);
+	fprintf(arq_saida, "\n  store double %%");
 	fprintf(arq_saida, "%d", reg_origem);
-	fprintf(arq_saida, "%s", store_meio);
+	fprintf(arq_saida, ", double* %%");
 	fprintf(arq_saida, "%d", reg_destino);
-	fprintf(arq_saida, "%s", store_fim);
+	fprintf(arq_saida, ", align 4");
 }
 
 /* Insere instrucao de soma e retorna o registrador que contem o resultado */
@@ -422,15 +357,11 @@ int insere_add_FLOAT_saida(int reg1, int reg2){
 	insere_load_FLOAT_saida(reg1, novo_reg1);
 	insere_load_FLOAT_saida(reg2, novo_reg2);
 
-	char* add_inicio = "\n  %";
-	char* add_meio = " = fadd double %";
-	char* add_fim = ", %";
-
-	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, " = fadd double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", add_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_FLOAT_saida(reg_resultado);
@@ -451,15 +382,11 @@ int insere_sub_FLOAT_saida(int reg1, int reg2){
 	insere_load_FLOAT_saida(reg1, novo_reg1);
 	insere_load_FLOAT_saida(reg2, novo_reg2);
 
-	char* sub_inicio = "\n  %";
-	char* sub_meio = " = fsub double %";
-	char* sub_fim = ", %";
-
-	fprintf(arq_saida, "%s", sub_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", sub_meio);
+	fprintf(arq_saida, " = fsub double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", sub_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_FLOAT_saida(reg_resultado);
@@ -480,15 +407,11 @@ int insere_mul_FLOAT_saida(int reg1, int reg2){
 	insere_load_FLOAT_saida(reg1, novo_reg1);
 	insere_load_FLOAT_saida(reg2, novo_reg2);
 
-	char* mul_inicio = "\n  %";
-	char* mul_meio = " = fmul double %";
-	char* mul_fim = ", %";
-
-	fprintf(arq_saida, "%s", mul_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", mul_meio);
+	fprintf(arq_saida, " = fmul double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", mul_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_FLOAT_saida(reg_resultado);
@@ -509,15 +432,11 @@ int insere_div_FLOAT_saida(int reg1, int reg2){
 	insere_load_FLOAT_saida(reg1, novo_reg1);
 	insere_load_FLOAT_saida(reg2, novo_reg2);
 
-	char* mul_inicio = "\n  %";
-	char* mul_meio = " = fdiv double %";
-	char* mul_fim = ", %";
-
-	fprintf(arq_saida, "%s", mul_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", mul_meio);
+	fprintf(arq_saida, " = fdiv double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", mul_fim);
+	fprintf(arq_saida, ", %%");
 	fprintf(arq_saida, "%d", novo_reg2);
 
 	insere_alloca_FLOAT_saida(reg_resultado);
@@ -538,18 +457,13 @@ int insere_pow_FLOAT_saida(int reg1, int reg2){
 	insere_load_FLOAT_saida(reg1, novo_reg1);
 	insere_load_FLOAT_saida(reg2, novo_reg2);
 
-	char* pow_inicio = "\n  %";
-	char* pow_meio = " = call double @pow(double %";
-	char* pow_meio2 = ", double %";
-	char* pow_fim = ") #3";
-
-	fprintf(arq_saida, "%s", pow_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg3);
-	fprintf(arq_saida, "%s", pow_meio);
+	fprintf(arq_saida, " = call double @pow(double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", pow_meio2);
+	fprintf(arq_saida, ", double %%");
 	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", pow_fim);
+	fprintf(arq_saida, ") #3");
 
 	insere_alloca_FLOAT_saida(reg_resultado);
 	insere_store_FLOAT_regs_saida(novo_reg3, reg_resultado);
@@ -565,15 +479,11 @@ void insere_atribuicao_FLOAT_saida(int reg_origem, int reg_destino){
 
 	insere_load_FLOAT_saida(reg_origem, novo_reg1);
 
-	char* add_inicio = "\n  %";
-	char* add_meio = " = fadd double %";
-	char* add_fim = ", 0x0000000000000000";
-
-	fprintf(arq_saida, "%s", add_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", add_meio);
+	fprintf(arq_saida, " = fadd double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", add_fim);
+	fprintf(arq_saida, ", 0x0000000000000000");
 
 	insere_store_FLOAT_regs_saida(novo_reg2, reg_destino);
 }
@@ -586,15 +496,11 @@ void insere_print_FLOAT_saida(int registrador){
 
 	insere_load_FLOAT_saida(registrador, novo_reg1);
 
-	char* call_inicio = "\n  %";
-	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0), double %";
-	char* call_fim = ")";
-
-	fprintf(arq_saida, "%s", call_inicio);
+	fprintf(arq_saida, "\n  %%");
 	fprintf(arq_saida, "%d", novo_reg2);
-	fprintf(arq_saida, "%s", call_meio);
+	fprintf(arq_saida, " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0), double %%");
 	fprintf(arq_saida, "%d", novo_reg1);
-	fprintf(arq_saida, "%s", call_fim);
+	fprintf(arq_saida, ")");
 }
 
 struct tipo_registrador percorre_expressao(struct no* no){
