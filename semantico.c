@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <inttypes.h>
+
 #include "arvore.h"
 #include "semantico.h"
 #include "sintatico.tab.h"
