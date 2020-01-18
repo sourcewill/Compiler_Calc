@@ -6,29 +6,38 @@ Compreende análise léxica, sintática, semântica e motor de execução.
 - Flex
 - Bison
 - GCC
+- Clang
 
 ## Montando:
 
 ### Montando com shell script:
 ```
-./montar_frontend.sh
+./montar_compilador.sh
 ```
 
 ### Montando manualmente:
 ```
 bison -d sintatico.y
-flex lexico.l -o lex.c
-gcc -o calculadora lex.c sintatico.tab.c sintatico.tab.h arvore.c semantico.c -lfl -lm -w
+flex lexico.l
+gcc -o calc lex.yy.c sintatico.tab.c sintatico.tab.h arvore.c semantico.c backend.c -lfl -lm -w
 ```
 
-## Executando:
+## Executando Compilador:
 Após montar, execute com o seguinte comando:
 ```
-./calculadora <arquivo_entrada>
+./calc <arquivo_entrada> -o <arquivo_saida>
 ```
 
 **Obs:** Por padrão o arquivo de entrada para o compilador é setado como "entrada.calc".
 Para passar outro arquivo de entrada passe-o como parâmetro de entrada na execução.
+
+## Gerando executável
+Após executar o compilador, o mesmo gera um arquivo de saída traduzindo a entradda para código intermediário LLVM.
+Gere o executavel com o seguinte comando:
+```
+clang saida.ll -o <nome_executavel> -lm
+```
+**Obs:** O compilador faz uso da funcao pow pertencente à biblioteca math, portanto se faz necessário uso da opcao -lm para gerar o executavel com Clang.
 
 ## Linguagem implementada:
 
