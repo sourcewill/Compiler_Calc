@@ -1,6 +1,6 @@
 # FrontEnd e motor de execução de um compilador.
 Desenvolvido por William Rodrigues. 2019.
-Compreende análise léxica, sintática, semântica e motor de execução.
+Compreende análise léxica, sintática, semântica, motor de execução e BackEnd.
 
 ## Pré-requisitos
 - Flex
@@ -23,21 +23,23 @@ gcc -o calc lex.yy.c sintatico.tab.c sintatico.tab.h arvore.c semantico.c backen
 ```
 
 ## Executando Compilador:
-Após montar, execute com o seguinte comando:
+Apos montar, execute com o seguinte comando:
 ```
 ./calc <arquivo_entrada> -o <arquivo_saida>
 ```
 
-**Obs:** Por padrão o arquivo de entrada para o compilador é setado como "entrada.calc".
-Para passar outro arquivo de entrada passe-o como parâmetro de entrada na execução.
+**Obs:** Para informacoes sobre o compilador utilize a opcao -h.
+Por padrao o arquivo de entrada para o compilador é setado como "entrada.calc".
+Semelhantemente, por padrão, o arquivo de saída é setado como "saida_calc.ll".
 
-## Gerando executável
+
+## Gerando Executável
 Após executar o compilador, o mesmo gera um arquivo de saída traduzindo a entradda para código intermediário LLVM.
 Gere o executavel com o seguinte comando:
 ```
-clang saida.ll -o <nome_executavel> -lm
+clang <arquivo_saida> -o <nome_executavel> -lm
 ```
-**Obs:** O compilador faz uso da funcao pow pertencente à biblioteca math, portanto se faz necessário uso da opcao -lm para gerar o executavel com Clang.
+**Obs:** O compilador faz uso da funcao pow pertencente a biblioteca math, portanto se faz necessario uso da opcao -lm para gerar o executavel com Clang.
 
 ## Linguagem implementada:
 
@@ -48,6 +50,7 @@ clang saida.ll -o <nome_executavel> -lm
 - operações: + - * / ^
 - símbolos: ( )
 - atribuição: =
+- finalizador de comando: ;
 - comentários: //
 
 ### Regras semânticas:
@@ -76,8 +79,14 @@ Definicoes e cabecalhos para funcoes de manipulacao do Analisador Semantico
 - semantico.c
 Funcoes de manipulacao do Analisador Semantico
 
-- entrada.calc
-Arquivo de entrada para o FrontEnd.
+- backend.h
+Definicoes e cabecalhos para funcoes do BackEnd.
 
-- montar_frontend.sh
-Arquivo contendo comandos necessarios para montar o FrontEnd.
+- backend.c
+Funcoes responaveis por gerar o arquivo de saida com codigo intermediario LLVM.
+
+- entrada.calc
+Arquivo de entrada para o Compilador.
+
+- montar_compilador.sh
+Arquivo contendo comandos necessarios para montar o compilador.
