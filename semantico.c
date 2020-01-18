@@ -391,7 +391,7 @@ void insere_store_FLOAT_saida(float valor, int registrador){
 	char* store_fim = ", align 4";
 
 	fprintf(arq_saida, "%s", store_inicio);
-	fprintf(arq_saida, "%s", fpString); /*CORRIGIR CONVERSAO PARA HEX AQUI*/
+	fprintf(arq_saida, "%s", fpString);
 	fprintf(arq_saida, "%s", store_meio);
 	fprintf(arq_saida, "%d", registrador);
 	fprintf(arq_saida, "%s", store_fim);
