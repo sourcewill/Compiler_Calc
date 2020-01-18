@@ -19,7 +19,7 @@ void insere_inicio_saida(){
 
 	char* comentario = "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.";
 	char* print_int = "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%d\\0A\\00\", align 1";
-	char* print_float = "\n@.str.1 = private unnamed_addr constant [4 x i8] c\"%f\\0A\\00\", align 1";
+	char* print_float = "\n@.str.1 = private unnamed_addr constant [6 x i8] c\"%.2f\\0A\\00\", align 1";
 	char* inicio_main = "\n\ndefine i32 @main() #0 {";
 
 	fprintf(arq_saida, "%s", comentario);
@@ -380,11 +380,9 @@ void insere_store_FLOAT_saida(float valor, int registrador){
 	char fpString[64];
 	char convertido[64];
 	double fpVal = 0.0;
-
 	sprintf(convertido, "%f", valor);
 	sscanf (convertido, "%lf", &fpVal);
 	FPtoHexString(fpString, fpVal);
-	printf ("\n HEX: %s\n", fpString);
 
 	char* store_inicio = "\n  store double ";
 	char* store_meio = ", double* %";
@@ -440,7 +438,7 @@ void insere_print_FLOAT_saida(int registrador){
 	insere_load_FLOAT_saida(registrador, novo_reg1);
 
 	char* call_inicio = "\n  %";
-	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), double %";
+	char* call_meio = " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0), double %";
 	char* call_fim = ")";
 
 	fprintf(arq_saida, "%s", call_inicio);
