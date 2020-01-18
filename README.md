@@ -1,4 +1,4 @@
-# FrontEnd e motor de execução de um compilador.
+# Compilador Calc.
 Desenvolvido por William Rodrigues. 2019.
 Compreende análise léxica, sintática, semântica, motor de execução e BackEnd.
 
