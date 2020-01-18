@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "arvore.h"
 #include "semantico.h"
 
@@ -64,18 +65,42 @@ exp
 
 %%
 
+void mostra_help(){
+	fprintf(stderr, "\nHELP...\n\n");
+	exit(0);
+}
 
 int main(int argc, char* argv[]) {
 
 	char* nome_arq_entrada;
 	char* nome_arq_saida;
-
+	int opt, indice;
 	nome_arq_entrada = "entrada.calc";
-	nome_arq_saida = "saida.ll";
+	nome_arq_saida = "saida_calc.ll";
+
+	if ( argc < 2 ) mostra_help() ;
+
+	while( (opt = getopt(argc, argv, "ho:")) > 0 ) {
+		switch ( opt ) {
+			case 'h': /* help */
+				mostra_help() ;
+				break ;
+			case 'o': /* opção -o */
+				nome_arq_saida = optarg ;
+				break ;
+			default:
+				fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n\n", optopt) ;
+				return -1 ;
+		}
+	}
+
+	for (indice = optind; indice < argc; indice++){
+		nome_arq_entrada = argv[indice];
+	}
 
 	yyin = fopen(nome_arq_entrada, "r");
 	if(!yyin){
-		printf("\nErro ao abrir arquivo de entrada: '%s'\n", nome_arq_entrada);
+		fprintf(stderr, "\nErro ao abrir arquivo de entrada: '%s'\n\n", nome_arq_entrada);
 		exit(1);
 	}
 
@@ -88,15 +113,17 @@ int main(int argc, char* argv[]) {
 
 	arq_saida = fopen(nome_arq_saida, "w");
 	if(!arq_saida){
-		printf("\nErro ao abrir arquivo de saida: '%s'\n", nome_arq_saida);
+		fprintf(stderr, "\nErro ao abrir arquivo de saida: '%s'\n\n", nome_arq_saida);
 		exit(1);
 	}
 
+	printf("\nExecutando BackEnd.\n");
 	backend( get_inicio_lista_arvore() );
 
 	fclose(arq_saida);
 
-	printf("\n");
+	printf("\nArquivo de saida '%s' criado no atual diretorio.", nome_arq_saida);
+	printf("\nPara gerar um executavel use o seguinte comando:\nclang %s -o <nome_executavel>\n\n", nome_arq_saida);
 	return 0;
 }
 
