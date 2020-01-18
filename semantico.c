@@ -33,7 +33,11 @@ void alloca_variaveis(){
 
 	struct tipo_valor tipo_valor;
 	struct variavel* var = inicio_lista_vars;
+	
 	while(var){
+
+		var->id = ID_REG++;
+
 		switch(var->tipo){
 			case NUM_INT:
 				insere_alloca_INT_saida(var->id);
@@ -630,7 +634,6 @@ struct variavel* nova_variavel(int tipo, char* nome, union numero valor, struct 
 
 	struct variavel * nova = malloc(sizeof(struct variavel));
 	nova->tipo = tipo;
-	nova->id = ID_REG;
 	nova->nome = nome;
 	switch(tipo){
 		case NUM_INT:
@@ -650,7 +653,6 @@ struct variavel* nova_variavel(int tipo, char* nome, union numero valor, struct 
 	}else{
 		inicio_lista_vars = nova;	
 	}
-	ID_REG++;
 	return nova;
 }
 
