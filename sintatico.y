@@ -1,3 +1,4 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
 
 %{
 
@@ -68,7 +69,12 @@ exp
 %%
 
 void mostra_help(){
-	fprintf(stderr, "\nHELP...\n\n");
+	fprintf(stderr, "\nVISAO GERAL:\n  Compilador para linguagem de programacao Calc.\n");
+	fprintf(stderr, "\nENTRADA:\n  Programa na linguagem Calc.\n");
+	fprintf(stderr, "\nSAIDA:\n  Bitcode (codigo intermediario LLVM).\n");
+	fprintf(stderr, "\nOPCOES:\n  -o <arquivo_saida>\n  Especifica o arquivo de saida para o compilador.\n  -h\n  Exibe mensagem informativa sobre o compilador.\n");
+	fprintf(stderr, "\nEXEMPLO DE USO:\n  ./calc entrada.calc -o saida.ll\n\n");
+	fprintf(stderr, "\nDesenvolvido por: William Rodrigues @ UEM 2020.\n\n");
 	exit(0);
 }
 
@@ -84,10 +90,10 @@ int main(int argc, char* argv[]) {
 
 	while( (opt = getopt(argc, argv, "ho:")) > 0 ) {
 		switch ( opt ) {
-			case 'h': /* help */
+			case 'h':
 				mostra_help() ;
 				break ;
-			case 'o': /* opção -o */
+			case 'o':
 				nome_arq_saida = optarg ;
 				break ;
 			default:
@@ -106,7 +112,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	printf("\nExecutando FrontEnd e Motor de Execucao.\n\n");
+	printf("\nExecutando FrontEnd e Motor de Execucao...\n\n");
 
 	yyparse();
 	fclose(yyin);
@@ -119,7 +125,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	printf("\nExecutando BackEnd.\n");
+	printf("\nExecutando BackEnd...\n");
 	backend( get_inicio_lista_arvore() );
 
 	fclose(arq_saida);

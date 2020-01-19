@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Montando FrontEnd para calculadora
+# Montando Compilador Calc
 
 bison -d sintatico.y #Executa bison
 flex lexico.l #Executa flex

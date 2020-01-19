@@ -1,3 +1,5 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
+
 /* Nos da arvore sintatica */
 struct no {
 	int tipo;

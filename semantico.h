@@ -1,3 +1,4 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
 
 /* Definicao de numero */
 union numero{
@@ -26,4 +27,3 @@ struct tipo_valor valida_exp(struct no *);
 
 /* Obtem tipo de uma variavel, buscando por seu nome */
 struct tipo_valor get_tipo_valor_variavel(char*);
-

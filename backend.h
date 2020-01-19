@@ -1,3 +1,4 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
 
 /* Estrutura para encapsular dois retornos*/
 struct tipo_registrador{

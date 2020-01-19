@@ -1,3 +1,5 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,10 +16,12 @@ int ID_REG = 1;
 extern struct variavel* inicio_lista_vars;
 extern struct variavel* fim_lista_vars;
 
+
 /* Insere inicio do arquivo de saida */
 void insere_inicio_saida(){
 
 	fprintf(arq_saida, "; Codigo LLVM intermediario gerado pelo compilador Calc.\n; Desenvolvido por William Rodrigues.");
+	fprintf(arq_saida, "\n\ntarget triple = \"x86_64-pc-linux-gnu\"");
 	fprintf(arq_saida, "\n\n@.str = private unnamed_addr constant [4 x i8] c\"%%d\\0A\\00\", align 1");
 	fprintf(arq_saida, "\n@.str.1 = private unnamed_addr constant [6 x i8] c\"%%.2f\\0A\\00\", align 1");
 	fprintf(arq_saida, "\n\ndefine i32 @main() #0 {");
@@ -613,7 +617,7 @@ struct tipo_registrador percorre_expressao(struct no* no){
 
 }
 
-/*EM CONSTRUCAO*/
+/*Percorre a arvore sintatica para gerar o codigo intermediario LLVM de saida*/
 void percorre_arvore(struct arvore_sintatica * arvore){
 
 	while(arvore){

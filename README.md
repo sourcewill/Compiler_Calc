@@ -1,5 +1,5 @@
 # Compilador Calc.
-Desenvolvido por William Rodrigues. 2019.
+Desenvolvido por: William Rodrigues @ UEM 2020.
 Compreende análise léxica, sintática, semântica, motor de execução e BackEnd.
 
 ## Pré-requisitos

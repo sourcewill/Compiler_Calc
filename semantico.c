@@ -1,3 +1,5 @@
+/* Desenvolvido por: William Rodrigues @ UEM 2020. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -321,4 +323,3 @@ void analise_semantica(struct arvore_sintatica * arvore){
 		arvore = arvore->next;
 	}
 }
-
