@@ -13,8 +13,8 @@
 // 1 + 1
 
 //Exemplos de erros Semanticos
-// 1 * 2.0;
-// 5.3 - 7;
+// a = 1 * 2.0;
+// a = 5.3 - 7;
 // a = 1 + b;
 // print 5/0;
 

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "arvore.h"
 #include "semantico.h"
@@ -80,11 +81,11 @@ void mostra_help(){
 
 int main(int argc, char* argv[]) {
 
-	char* nome_arq_entrada;
-	char* nome_arq_saida;
+	char nome_arq_entrada[254] = "entrada.calc";
+	char nome_arq_saida[254] = "saida_calc";
+	char nome_arq_saida_llvm[254];
 	int opt, indice;
-	nome_arq_entrada = "entrada.calc";
-	nome_arq_saida = "saida_calc.ll";
+
 
 	if ( argc < 2 ) mostra_help() ;
 
@@ -94,7 +95,7 @@ int main(int argc, char* argv[]) {
 				mostra_help() ;
 				break ;
 			case 'o':
-				nome_arq_saida = optarg ;
+				strcpy(nome_arq_saida, optarg);
 				break ;
 			default:
 				fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n\n", optopt) ;
@@ -103,7 +104,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	for (indice = optind; indice < argc; indice++){
-		nome_arq_entrada = argv[indice];
+		strcpy(nome_arq_entrada, argv[indice]);
 	}
 
 	yyin = fopen(nome_arq_entrada, "r");
@@ -119,9 +120,12 @@ int main(int argc, char* argv[]) {
 
 	analise_semantica( get_inicio_lista_arvore() );
 
-	arq_saida = fopen(nome_arq_saida, "w");
+	strcpy((char*)nome_arq_saida_llvm, (char*)nome_arq_saida);
+	strcat(nome_arq_saida_llvm, ".ll");
+
+	arq_saida = fopen(nome_arq_saida_llvm, "w");
 	if(!arq_saida){
-		fprintf(stderr, "\nErro ao abrir arquivo de saida: '%s'\n\n", nome_arq_saida);
+		fprintf(stderr, "\nErro ao abrir arquivo de saida: '%s'\n\n", nome_arq_saida_llvm);
 		exit(1);
 	}
 
@@ -130,8 +134,16 @@ int main(int argc, char* argv[]) {
 
 	fclose(arq_saida);
 
+	/* Forma e executa comando clang para compilar o codigo intermediario gerado*/
+	char cmd[254] = "clang ";
+	strcat(cmd, nome_arq_saida_llvm);
+	strcat(cmd, " -o ");
+	strcat(cmd, nome_arq_saida);
+	strcat(cmd, " -lm");
+	system(cmd);
+
 	printf("\nArquivo de saida '%s' criado no atual diretorio.", nome_arq_saida);
-	printf("\nPara gerar um executavel use o seguinte comando:\nclang %s -o <nome_executavel> -lm\n\n", nome_arq_saida);
+	printf("\nExecute usando o seguinte comando:\n./%s\n\n", nome_arq_saida);
 	return 0;
 }
 
