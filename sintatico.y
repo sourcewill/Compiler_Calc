@@ -135,15 +135,15 @@ int main(int argc, char* argv[]) {
 	fclose(arq_saida);
 
 	/* Forma e executa comando clang para compilar o codigo intermediario gerado*/
-	char cmd[254] = "clang ";
-	strcat(cmd, nome_arq_saida_llvm);
-	strcat(cmd, " -o ");
-	strcat(cmd, nome_arq_saida);
-	strcat(cmd, " -lm");
-	system(cmd);
+	char comando[254] = "clang ";
+	strcat(comando, nome_arq_saida_llvm);
+	strcat(comando, " -o ");
+	strcat(comando, nome_arq_saida);
+	strcat(comando, " -lm");
+	system(comando);
 
 	printf("\nArquivo de saida '%s' criado no atual diretorio.", nome_arq_saida);
-	printf("\nExecute usando o seguinte comando:\n./%s\n\n", nome_arq_saida);
+	printf("\nExecute usando o comando:\n./%s\n\n", nome_arq_saida);
 	return 0;
 }
 
