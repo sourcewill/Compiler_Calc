@@ -2,6 +2,13 @@
 Desenvolvido por: William Rodrigues @ UEM 2020.
 Compreende análise léxica, sintática, semântica, motor de execução e BackEnd.
 
+## Entrada
+- Programa na linguagem Calc. 
+
+## Saidas
+- Codigo intermediario llvm
+- Executavel
+
 ## Pré-requisitos
 - Flex
 - Bison
@@ -30,16 +37,8 @@ Apos montar, execute com o seguinte comando:
 
 **Obs:** Para informacoes sobre o compilador utilize a opcao -h.
 Por padrao o arquivo de entrada para o compilador é setado como "entrada.calc".
-Semelhantemente, por padrão, o arquivo de saída é setado como "saida_calc.ll".
+Semelhantemente, por padrão, os arquivos de saída são setados como "saida_calc" (executavel) e "saida_calc.ll" (codigo intermediario llvm).
 
-
-## Gerando Executável
-Após executar o compilador, o mesmo gera um arquivo de saída traduzindo a entradda para código intermediário LLVM.
-Gere o executavel com o seguinte comando:
-```
-clang <arquivo_saida> -o <nome_executavel> -lm
-```
-**Obs:** O compilador faz uso da funcao pow pertencente a biblioteca math, portanto se faz necessario uso da opcao -lm para gerar o executavel com Clang.
 
 ## Linguagem implementada:
 
