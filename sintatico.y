@@ -108,13 +108,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	if(strcmp(nome_arq_entrada, "") == 0){
-		fprintf(stderr, "\nArquivo de entrada nao informado.");
-		fprintf(stderr, "\nUtilize a opcao -h para ajuda.\n\n");
+		fprintf(stderr, "\nErro: Arquivo de entrada nao informado.");
+		fprintf(stderr, "\nErro: Utilize a opcao -h para ajuda.\n\n");
 		exit(1);
 	}
 	if(strcmp(nome_arq_saida, "") == 0){
-		fprintf(stderr, "\nArquivo de saida nao informado.");
-		fprintf(stderr, "\nUtilize a opcao -h para ajuda.\n\n");
+		fprintf(stderr, "\nErro: Arquivo de saida nao informado.");
+		fprintf(stderr, "\nErro: Utilize a opcao -h para ajuda.\n\n");
 		exit(1);
 	}
 
