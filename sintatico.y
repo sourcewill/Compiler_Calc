@@ -81,13 +81,13 @@ void mostra_help(){
 
 int main(int argc, char* argv[]) {
 
-	char nome_arq_entrada[254] = "entrada.calc";
-	char nome_arq_saida[254] = "saida_calc";
+	char nome_arq_entrada[254] = "";
+	char nome_arq_saida[254] = "";
 	char nome_arq_saida_llvm[254];
 	int opt, indice;
 
 
-	if ( argc < 2 ) mostra_help() ;
+	//if ( argc < 2 ) mostra_help() ;
 
 	while( (opt = getopt(argc, argv, "ho:")) > 0 ) {
 		switch ( opt ) {
@@ -107,13 +107,26 @@ int main(int argc, char* argv[]) {
 		strcpy(nome_arq_entrada, argv[indice]);
 	}
 
+	if(strcmp(nome_arq_entrada, "") == 0){
+		fprintf(stderr, "\nArquivo de entrada nao informado.");
+		fprintf(stderr, "\nUtilize a opcao -h para ajuda.\n\n");
+		exit(1);
+	}
+	if(strcmp(nome_arq_saida, "") == 0){
+		fprintf(stderr, "\nArquivo de saida nao informado.");
+		fprintf(stderr, "\nUtilize a opcao -h para ajuda.\n\n");
+		exit(1);
+	}
+
 	yyin = fopen(nome_arq_entrada, "r");
 	if(!yyin){
 		fprintf(stderr, "\nErro ao abrir arquivo de entrada: '%s'\n\n", nome_arq_entrada);
 		exit(1);
 	}
 
-	printf("\nExecutando FrontEnd e Motor de Execucao...\n\n");
+	printf("\nArquivo de entrada: %s\n", nome_arq_entrada);
+
+	printf("\nExecutando FrontEnd...\n\n");
 
 	yyparse();
 	fclose(yyin);

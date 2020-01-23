@@ -36,9 +36,6 @@ Apos montar, execute com o seguinte comando:
 ```
 
 **Obs:** Para informacoes sobre o compilador utilize a opcao -h.
-Por padrao o arquivo de entrada para o compilador é setado como "entrada.calc".
-Semelhantemente, por padrão, os arquivos de saída são setados como "saida_calc" (executavel) e "saida_calc.ll" (codigo intermediario llvm).
-
 
 ## Linguagem implementada:
 
