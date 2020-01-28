@@ -74,7 +74,8 @@ void mostra_help(){
 	fprintf(stderr, "\nENTRADA:\n  Programa na linguagem Calc.\n");
 	fprintf(stderr, "\nSAIDA:\n  Bitcode (codigo intermediario LLVM).\n");
 	fprintf(stderr, "\nOPCOES:\n  -o <arquivo_saida>\n  Especifica o arquivo de saida para o compilador.\n  -h\n  Exibe mensagem informativa sobre o compilador.\n");
-	fprintf(stderr, "\nEXEMPLO DE USO:\n  ./calc entrada.calc -o saida.ll\n\n");
+	fprintf(stderr, "\nUSO:\n  ./calc <arquivo_entrada> -o <arquivo_saida>\n\n");
+	fprintf(stderr, "\nEXEMPLO DE USO:\n  ./calc entrada.calc -o saida\n\n");
 	fprintf(stderr, "\nDesenvolvido por: William Rodrigues @ UEM 2020.\n\n");
 	exit(0);
 }
@@ -109,12 +110,12 @@ int main(int argc, char* argv[]) {
 
 	if(strcmp(nome_arq_entrada, "") == 0){
 		fprintf(stderr, "\nErro: Arquivo de entrada nao informado.");
-		fprintf(stderr, "\nErro: Utilize a opcao -h para ajuda.\n\n");
+		fprintf(stderr, "\nCalc: Utilize a opcao -h para ajuda.\n\n");
 		exit(1);
 	}
 	if(strcmp(nome_arq_saida, "") == 0){
 		fprintf(stderr, "\nErro: Arquivo de saida nao informado.");
-		fprintf(stderr, "\nErro: Utilize a opcao -h para ajuda.\n\n");
+		fprintf(stderr, "\nCalc: Utilize a opcao -h para ajuda.\n\n");
 		exit(1);
 	}
 
@@ -126,7 +127,7 @@ int main(int argc, char* argv[]) {
 
 	printf("\nArquivo de entrada: %s\n", nome_arq_entrada);
 
-	printf("\nExecutando FrontEnd...\n\n");
+	printf("\nExecutando FrontEnd...");
 
 	yyparse();
 	fclose(yyin);
@@ -155,6 +156,7 @@ int main(int argc, char* argv[]) {
 	strcat(comando, " -lm");
 	system(comando);
 
+	printf("\nArquivo intermediario '%s' criado no atual diretorio.", nome_arq_saida_llvm);
 	printf("\nArquivo de saida '%s' criado no atual diretorio.", nome_arq_saida);
 	printf("\nExecute usando o comando:\n./%s\n\n", nome_arq_saida);
 	return 0;

@@ -303,18 +303,7 @@ void analise_semantica(struct arvore_sintatica * arvore){
 
 		switch(arvore->tipo){
 			case 1:
-				tipo_valor = valida_exp(arvore->exp);
-				switch(tipo_valor.tipo){
-					case NUM_INT:
-						printf("%d\n", tipo_valor.valor.inteiro);
-						break;
-					case NUM_FLOAT:
-						printf("%.2f\n", tipo_valor.valor.real);
-						break;
-					default:
-						printf("\nErro interno: tipo indefinido.");
-						exit(1);
-				}
+				valida_exp(arvore->exp);				
 				break;
 			case 2:
 				valida_atr(arvore->id, arvore->exp);
