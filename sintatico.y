@@ -87,9 +87,6 @@ int main(int argc, char* argv[]) {
 	char nome_arq_saida_llvm[254];
 	int opt, indice;
 
-
-	//if ( argc < 2 ) mostra_help() ;
-
 	while( (opt = getopt(argc, argv, "ho:")) > 0 ) {
 		switch ( opt ) {
 			case 'h':
@@ -127,7 +124,7 @@ int main(int argc, char* argv[]) {
 
 	printf("\nArquivo de entrada: %s\n", nome_arq_entrada);
 
-	printf("\nExecutando FrontEnd...");
+	//printf("\nExecutando FrontEnd...");
 
 	yyparse();
 	fclose(yyin);
@@ -163,6 +160,6 @@ int main(int argc, char* argv[]) {
 }
 
 void yyerror(char *s) {
-	fprintf(stderr, "\nAnalisador sintatico: (linha %d, coluna %d)\nErro sintatico.\n", linha, coluna-1);
+	fprintf(stderr, "\nAnalisador sintatico: (linha %d, coluna %d)\nCalc: Erro sintatico.\n", linha, coluna-1);
 	exit(1);
 }
